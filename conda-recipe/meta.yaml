@@ -1,0 +1,50 @@
+{% set data = load_setup_py_data(setup_file='../setup.py', from_recipe_dir=True) %}
+
+package:
+  name: {{ data.get('name')|lower }}
+  version: {{ data.get('version')|lower }}
+
+source:
+  path: ..
+
+build:
+  number: 0
+  string: np{{ CONDA_NPY }}py{{ CONDA_PY }}
+  entry_points:
+    {% for entry_point_type, entry_points in data.get("entry_points", dict()).items() -%}
+    {% for entry_point in entry_points -%}
+    - {{ entry_point }}
+    {% endfor %}
+    {% endfor %}
+requirements:
+  host:
+    - python {{ python }}
+    - {{ pin_compatible('numpy') }}
+    - pyyaml
+    - setuptools
+  build:
+    - python {{ python }}
+    - {{ pin_compatible('numpy') }}
+    - setuptools
+    - pyyaml
+  run:
+    - python {{ python }}
+    - numpy
+    - pyyaml >=5.0.0
+    - qtpy >=1.8.0
+    - pyqt >=5.13.0|5.9.2.*|5.6.0.*
+    - pyqtgraph >0.10.0|0.9.10
+    - tttrlib
+    - pathlib2 # [py < 3]
+
+about:
+  home: {{ data.get('url') }}
+  license: {{ data.get('license') }}
+  license_file: LICENSE
+  summary: Converter for TTTR files
+  description: |
+    {{ data.get('description') }}
+
+extra:
+  recipe-maintainers:
+    - tpeulen

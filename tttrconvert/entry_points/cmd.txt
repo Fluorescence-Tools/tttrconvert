@@ -1,0 +1,1 @@
+tttrconvert_cmd tttrconvert.__main__:main
