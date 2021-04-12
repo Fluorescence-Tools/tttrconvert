@@ -158,12 +158,10 @@ class TTTRConvert(QtWidgets.QWidget):
             filetypes.keys()
         )
         self.hide()
-
         self.file_list = FileList(filename_ending=self.ending)
         self.actionClear_list.triggered.connect(self.file_list.clear)
         self.actionOpen_Target.triggered.connect(self.open_target)
         self.actionEnding_changed.triggered.connect(self.ending_changed)
-
         self.verticalLayout.addWidget(self.file_list)
 
     def ending_changed(self):
@@ -172,12 +170,14 @@ class TTTRConvert(QtWidgets.QWidget):
     def open_target(
             self
     ):
-        raise NotImplemented
-        # filename = chisurf.gui.widgets.save_file(
-        #     file_type="Photon-HDF (*.photon.h5)"
-        # )
-        # self.lineEdit.setText(filename)
-        # spc_files = self.filenames
+        filename, _ = QtWidgets.QFileDialog.getSaveFileName(None, "TTTR file", None, "TTTR file (*.photon.h5; *.ht3; *.ptu; *.spc)")
+        self.lineEdit.setText(filename)
+        tttr_files = self.filenames
+        for fn in tttr_files:
+            tttr = tttrlib.TTTR(fn)
+            basename = os.path.splitext(os.path.basename(fn))[0]
+            print(basename)
+            # tttr.write()
         # h5 = chisurf.fio.fluorescence.tttr.spc2hdf(
         #     spc_files,
         #     routine_name=self.filetype,
