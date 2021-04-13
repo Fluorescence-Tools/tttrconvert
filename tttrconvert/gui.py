@@ -118,9 +118,11 @@ class TTTRConvert(QtWidgets.QWidget):
 
     name = "tttr-tttrconvert"
 
+    _current_filetype = "hdf"
+
     @property
     def filetype(self):
-        return str(self.comboBox.currentText())
+        return self._current_filetype
 
     @property
     def ending(self):
@@ -139,11 +141,12 @@ class TTTRConvert(QtWidgets.QWidget):
             *args,
             **kwargs
     ):
-        # initilize UI
         super().__init__(
             *args,
             **kwargs
         )
+        self.file_list = FileList(filename_ending=self.ending)
+        # initilize UI
         uic.loadUi(
             os.path.join(
                 os.path.dirname(
@@ -158,13 +161,13 @@ class TTTRConvert(QtWidgets.QWidget):
             filetypes.keys()
         )
         self.hide()
-        self.file_list = FileList(filename_ending=self.ending)
         self.actionClear_list.triggered.connect(self.file_list.clear)
         self.actionOpen_Target.triggered.connect(self.open_target)
         self.actionEnding_changed.triggered.connect(self.ending_changed)
         self.verticalLayout.addWidget(self.file_list)
 
     def ending_changed(self):
+        self._current_filetype = str(self.comboBox.currentText())
         self.file_list.filename_ending = self.ending
 
     def open_target(
