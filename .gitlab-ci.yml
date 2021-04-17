@@ -15,7 +15,7 @@ build:linux:
     - linux
   image: continuumio/miniconda3:latest
   script:
-    - echo "I am a build stage job for debian, running on docker using continuumio/miniconda3:latest image"
+    - echo "I am a build stage."
     - source activate
     - conda install mamba boa conda-verify -c conda-forge
     - mamba update -y -n base -c defaults --all
@@ -46,7 +46,7 @@ test:linux:
     - apt install -yq xorg-dev libglu1-mesa libgl1-mesa-dev xvfb libxinerama1 libxcursor1 libgl1-mesa-glx procps wget
     - conda config --set always_yes yes --set changeps1 no
   script:
-    - echo "I am a test stage job for debian, running on docker using continuumio/miniconda3:latest image"
+    - echo "I am a test stage."
     - source activate base
     - conda install mamba conda-verify -c conda-forge
     - |
@@ -54,7 +54,7 @@ test:linux:
         conda config --add channels conda-forge
         conda config --add channels tpeulen
         conda config --add channels "file://`pwd`/bld-dir"
-    - mamba create -n test python=3.7 tttrconvert
+    - mamba create -n test python tttrconvert
     - conda activate test
     # Run GUI with xvfb - no X11 screen
     - |
@@ -70,8 +70,10 @@ deploy:
   dependencies:
     - build:linux
   script:
-    - echo "I am a depolyment stage job for debian, running on docker using continuumio/miniconda3:latest image"
+    - echo "I am a depolyment stage job."
     - source activate
     - conda install anaconda-client
     - if [[ "$CI_COMMIT_REF_NAME" == "master" ]]; then DEPLOY_VARIABLE=main; else DEPLOY_VARIABLE=nightly; fi
     - anaconda -t ${ANACONDA_API_TOKEN} upload -l ${DEPLOY_VARIABLE} -u ${CONDA_USER} --force bld-dir/linux-64/*.tar.bz2
+  
+
