@@ -17,7 +17,7 @@ build:linux:
   script:
     - source activate
     - cp .condarc ~/.condarc
-    - conda install mamba=$MAMBA_VERSION boa conda-verify -c conda-forge
+    - conda install mamba=$MAMBA_VERSION boa conda-verify
     - conda mambabuild conda-recipe --output-folder bld-dir
   artifacts:
     expire_in: 7 days
