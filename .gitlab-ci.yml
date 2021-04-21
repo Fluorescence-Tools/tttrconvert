@@ -43,6 +43,7 @@ test:linux:
     - source activate base
     - conda install mamba=$MAMBA_VERSION -c conda-forge
     - echo $CONDARC >> ~/.condarc
+    - echo $CONDARC
     - conda config --add channels "file://`pwd`/bld-dir"
     - mamba create -n test python tttrconvert
     - conda activate test
