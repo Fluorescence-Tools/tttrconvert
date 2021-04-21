@@ -67,5 +67,5 @@ deploy:
   
 chisurf:
   stage: Trigger-cross-projects
-  trigger: tpeulen/chisurf
+  trigger: chisurf/chisurf
 
