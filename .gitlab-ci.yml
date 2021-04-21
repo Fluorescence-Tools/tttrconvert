@@ -8,8 +8,6 @@ stages:
 # only cache local items.
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-  MINICONDA_VERSION: "latest"
-  MAMBA_VERSION: "0.10"
 
 build:linux:
   stage: build
@@ -17,13 +15,9 @@ build:linux:
     - linux
   image: continuumio/miniconda3:latest
   script:
-    - echo "I am a build stage."
     - source activate
     - conda install mamba=$MAMBA_VERSION boa conda-verify -c conda-forge
-    - |
-        conda config --add channels salilab
-        conda config --add channels conda-forge
-        conda config --add channels tpeulen
+    - echo $CONDARC > ~/.condarc
     - conda mambabuild conda-recipe --output-folder bld-dir
   artifacts:
     expire_in: 7 days
@@ -42,19 +36,14 @@ test:linux:
     # See: https://stackoverflow.com/questions/65675765/is-it-possible-to-run-x11-on-gitlab-ci
     # See: https://github.com/conda-forge/pygridgen-feedstock/issues/10
     # procps is used to grep the process by name to kill it when needed
-    - export DEBIAN_FRONTEND=noninteractive
     - apt update -yq
     - apt install -yq xorg-dev libglu1-mesa libgl1-mesa-dev xvfb libxinerama1 libxcursor1 libgl1-mesa-glx procps wget
     - conda config --set always_yes yes --set changeps1 no
   script:
-    - echo "I am a test stage."
     - source activate base
     - conda install mamba=$MAMBA_VERSION -c conda-forge
-    - |
-        conda config --add channels salilab
-        conda config --add channels conda-forge
-        conda config --add channels tpeulen
-        conda config --add channels "file://`pwd`/bld-dir"
+    - echo $CONDARC >> ~/.condarc
+    - conda config --add channels "file://`pwd`/bld-dir"
     - mamba create -n test python tttrconvert
     - conda activate test
     # Run GUI with xvfb - no X11 screen
@@ -71,10 +60,9 @@ deploy:
   dependencies:
     - build:linux
   script:
-    - echo "I am a depolyment stage job."
     - source activate
     - conda install anaconda-client
-    - if [[ "$CI_COMMIT_REF_NAME" == "master" ]]; then DEPLOY_VARIABLE=main; else DEPLOY_VARIABLE=nightly; fi
+    - if [[ "$CI_COMMIT_REF_NAME" == "master" ]]; then DEPLOY_LABEL=$LABEL_RELEASE; else DEPLOY_VARIABLE=$LABEL_TESTING; fi
     - anaconda -t ${ANACONDA_API_TOKEN} upload -l ${DEPLOY_VARIABLE} -u ${CONDA_USER} --force bld-dir/linux-64/*.tar.bz2
   
 chisurf:
