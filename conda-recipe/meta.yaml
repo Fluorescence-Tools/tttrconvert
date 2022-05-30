@@ -34,7 +34,7 @@ requirements:
     - qtpy
     - pyqt
     - pyqtgraph
-    - tttrlib >=0.21.0
+    - tttrlib
     - pathlib2 # [py < 3]
 
 about:
