@@ -1,3 +1,28 @@
+.OSXTemplate:  &osx_template
+  tags:
+    - osx
+  before_script:
+    - brew install wget git git-lfs
+    - git submodule update --init --recursive --remote
+.LinuxTemplate:  &linux_template
+  tags:
+    - linux
+  image:
+    name: condaforge/mambaforge
+  before_script:
+    - git submodule update --init --recursive --remote
+.WindowsTemplate:  &win_template
+  tags:
+    - win
+  before_script:
+    - git submodule update --init --recursive --remote
+  image:
+    name: mambaforge:vs16
+.BuildTemplate: &build_template
+  artifacts:
+    paths:
+      - bld-dir/
+
 stages:
   - build
   - test
@@ -5,48 +30,34 @@ stages:
   - Trigger-cross-projects
 
 build:linux:
+  <<: *linux_template
+  <<: *build_template
   stage: build
-  tags:
-    - linux
-  image: condaforge/mambaforge:latest
-  before_script:
-    - apt update -yq && apt -yq install build-essential
-    - git submodule update --init --recursive --remote
   script:
     - ./tools/build.sh
-  artifacts:
-    paths:
-      - bld-dir/
 
 build:windows:
+  <<: *win_template
+  <<: *build_template
   stage: build
-  tags:
-    - win
-  before_script:
-    - git submodule update --init --recursive --remote
   script:
-    - .\tools\build.bat
-  artifacts:
-    paths:
-      - bld-dir/
+    - cmd.ex
+    - conda activate base
+    - ./tools/build.bat
 
 build:osx:
+  <<: *build_template
+  <<: *osx_template
   stage: build
-  tags:
-    - osx
-  before_script:
-    - git submodule update --init --recursive --remote
   script:
-    - ./tools/build.sh
-  artifacts:
-    paths:
-      - bld-dir/
+    - ./tools/setup.sh
 
 test:linux:
   stage: test
   tags:
     - linux
-  image: condaforge/mambaforge:latest
+  image:
+    name: condaforge/mambaforge
   before_script:
     # Issue with OpenGL and X11 display
     # See: https://stackoverflow.com/questions/65675765/is-it-possible-to-run-x11-on-gitlab-ci
@@ -69,16 +80,12 @@ test:linux:
       pgrep -f tttrconvert | awk '{print "kill -9 " $1}' | sh
 
 deploy:conda:
+  <<: *linux_template
   stage: deploy
-  image: condaforge/mambaforge:latest
-  tags:
-    - linux
   dependencies:
     - build:linux
     - build:windows
     - build:osx
-  before_script:
-    - git submodule update --init --recursive --remote
   script:
     - ./tools/deploy.sh
 
