@@ -1,87 +1,50 @@
-stages:
-  - build
-  - test
-  - deploy
-  - Trigger-cross-projects
+{% set data = load_setup_py_data(setup_file='../setup.py', from_recipe_dir=True) %}
 
-build:linux:
-  stage: build
-  tags:
-    - linux
-  image: condaforge/mambaforge:latest
-  before_script:
-    - apt update -yq && apt -yq install build-essential
-    - git submodule update --init --recursive --remote
-  script:
-    - ./tools/build.sh
-  artifacts:
-    paths:
-      - bld-dir/
+package:
+  name: {{ data.get('name')|lower }}
+  version: {{ data.get('version')|lower }}
 
-build:windows:
-  stage: build
-  tags:
-    - win
-  before_script:
-    - git submodule update --init --recursive --remote
-  script:
-    - .\tools\build.bat
-  artifacts:
-    paths:
-      - bld-dir/
+source:
+  path: ..
 
-build:osx:
-  stage: build
-  tags:
-    - osx
-  before_script:
-    - git submodule update --init --recursive --remote
-  script:
-    - ./tools/build.sh
-  artifacts:
-    paths:
-      - bld-dir/
+build:
+  number: 0
+  string: py{{ python }}
+  entry_points:
+    {% for entry_point_type, entry_points in data.get("entry_points", dict()).items() -%}
+    {% for entry_point in entry_points -%}
+    - {{ entry_point }}
+    {% endfor %}
+    {% endfor %}
+requirements:
+  host:
+    - python
+    - numpy
+    - pyyaml
+    - setuptools
+  build:
+    - python
+    - numpy
+    - setuptools
+    - pyyaml
+  run:
+    - python
+    - numpy
+    - pyyaml
+    - qtpy
+    - pyqt
+    - pyqtgraph
+    - tttrlib
+    - pathlib2  # [py < 3]
 
-test:linux:
-  stage: test
-  tags:
-    - linux
-  image: condaforge/mambaforge:latest
-  before_script:
-    # Issue with OpenGL and X11 display
-    # See: https://stackoverflow.com/questions/65675765/is-it-possible-to-run-x11-on-gitlab-ci
-    # See: https://github.com/conda-forge/pygridgen-feedstock/issues/10
-    # procps is used to grep the process by name to kill it when needed
-    - apt update -yq
-    - apt install -yq xorg-dev libglu1-mesa libgl1-mesa-dev xvfb libxinerama1 libxcursor1 libgl1-mesa-glx procps
-  script:
-    - source activate
-    # Disable Numba JIT for correct coverage analysis
-    - export NUMBA_DISABLE_JIT=1
-    - cp tools/.condarc ~/.condarc
-    - conda config --add channels "file://`pwd`/bld-dir"
-    - mamba create -n test python tttrconvert
-    - conda activate test
-    # Run GUI with xvfb - no X11 screen
-    - |
-      xvfb-run -a -s "-screen 0 1400x900x24 +extension RANDR" -- tttrconvert &
-      sleep 10
-      pgrep -f tttrconvert | awk '{print "kill -9 " $1}' | sh
+about:
+  home: {{ data.get('url') }}
+  license: {{ data.get('license') }}
+  license_file: LICENSE
+  summary: Converter for TTTR files
+  description: |
+    {{ data.get('description') }}
 
-deploy:conda:
-  stage: deploy
-  image: condaforge/mambaforge:latest
-  tags:
-    - linux
-  dependencies:
-    - build:linux
-    - build:windows
-    - build:osx
-  before_script:
-    - git submodule update --init --recursive --remote
-  script:
-    - ./tools/deploy.sh
-
-chisurf:
-  stage: Trigger-cross-projects
-  trigger: chisurf/chisurf
+extra:
+  recipe-maintainers:
+    - tpeulen
