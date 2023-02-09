@@ -30,9 +30,14 @@ stages:
   - Trigger-cross-projects
 
 build:linux:
-  <<: *linux_template
-  <<: *build_template
   stage: build
+  tags:
+    - linux
+  image: condaforge/mambaforge:latest
+  before_script:
+    - apt update -yq && apt -yq install build-essential
+    - git submodule update --init --recursive --remote
+    - cd tools && git pull --force && cd ..
   script:
     - ./tools/build.sh
 
@@ -41,7 +46,8 @@ build:windows:
   <<: *build_template
   stage: build
   script:
-    - cmd.ex
+    - cmd.exe
+    - cd tools && git pull --force && cd ..
     - conda activate base
     - ./tools/build.bat
 
