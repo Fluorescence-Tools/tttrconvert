@@ -23,7 +23,7 @@ requirements:
     - pyyaml
     - setuptools
   build:
-    - python {{ python }}
+    - python
     - numpy
     - setuptools
     - pyyaml
@@ -35,7 +35,7 @@ requirements:
     - pyqt
     - pyqtgraph
     - tttrlib
-    - pathlib2 # [py < 3]
+    - pathlib2  # [py < 3]
 
 about:
   home: {{ data.get('url') }}
