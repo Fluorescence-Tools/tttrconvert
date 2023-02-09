@@ -41,7 +41,7 @@ build:osx:
   tags:
     - osx
   before_script:
-    - git clone https://gitlab.peulen.xyz/build/tools/
+    - cd tools && git pull --force && cd..
     - git submodule update --init --recursive --remote
   script:
     - ./tools/build.sh
