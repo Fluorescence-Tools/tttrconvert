@@ -77,7 +77,9 @@ test:linux:
       pgrep -f tttrconvert | awk '{print "kill -9 " $1}' | sh
 
 deploy:conda:
-  <<: *linux_template
+  tags:
+    - linux
+  image: condaforge/mambaforge:latest
   stage: deploy
   dependencies:
     - build:linux
