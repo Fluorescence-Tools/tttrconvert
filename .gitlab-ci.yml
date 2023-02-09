@@ -12,7 +12,7 @@ build:linux:
   before_script:
     - apt update -yq && apt -yq install build-essential
     - git submodule update --init --recursive --remote
-    - git clone https://gitlab.peulen.xyz/build/tools/
+    - cd tools && git pull --force && cd ..
   script:
     - ./tools/build.sh
   artifacts:
@@ -25,12 +25,12 @@ build:windows:
     - win
   stage: build
   before_script:
-    - git clone https://gitlab.peulen.xyz/build/tools/
+    - cd tools && git pull --force && cd ..
     - git submodule update --init --recursive --remote
   script:
     - cmd.exe
     - conda activate base
-    - cd tools && git pull --force && cd..
+    - git submodule update --init --recursive --remote
     - .\tools\build.bat
   artifacts:
     paths:
