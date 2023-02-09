@@ -1,28 +1,3 @@
-.OSXTemplate:  &osx_template
-  tags:
-    - osx
-  before_script:
-    - brew install wget git git-lfs
-    - git submodule update --init --recursive --remote
-.LinuxTemplate:  &linux_template
-  tags:
-    - linux
-  image:
-    name: condaforge/mambaforge
-  before_script:
-    - git submodule update --init --recursive --remote
-.WindowsTemplate:  &win_template
-  tags:
-    - win
-  before_script:
-    - git submodule update --init --recursive --remote
-  image:
-    name: mambaforge:vs16
-.BuildTemplate: &build_template
-  artifacts:
-    paths:
-      - bld-dir/
-
 stages:
   - build
   - test
@@ -37,26 +12,42 @@ build:linux:
   before_script:
     - apt update -yq && apt -yq install build-essential
     - git submodule update --init --recursive --remote
-    - cd tools && git pull --force && cd ..
+    - git clone https://gitlab.peulen.xyz/build/tools/
   script:
     - ./tools/build.sh
+  artifacts:
+    paths:
+      - bld-dir/
 
 build:windows:
-  <<: *win_template
-  <<: *build_template
+  image: mambaforge:vs16
+  tags:
+    - win
   stage: build
+  before_script:
+    - git clone https://gitlab.peulen.xyz/build/tools/
+    - git submodule update --init --recursive --remote
   script:
     - cmd.exe
-    - cd tools && git pull --force && cd ..
     - conda activate base
-    - ./tools/build.bat
+    - cd tools && git pull --force && cd..
+    - .\tools\build.bat
+  artifacts:
+    paths:
+      - bld-dir/
 
 build:osx:
-  <<: *build_template
-  <<: *osx_template
   stage: build
+  tags:
+    - osx
+  before_script:
+    - git clone https://gitlab.peulen.xyz/build/tools/
+    - git submodule update --init --recursive --remote
   script:
-    - ./tools/setup.sh
+    - ./tools/build.sh
+  artifacts:
+    paths:
+      - bld-dir/
 
 test:linux:
   stage: test
