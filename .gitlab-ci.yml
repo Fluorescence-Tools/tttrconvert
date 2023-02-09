@@ -41,7 +41,7 @@ build:osx:
   tags:
     - osx
   before_script:
-    - cd tools && git pull --force && cd..
+    - cd tools && git pull --force && cd ..
     - git submodule update --init --recursive --remote
   script:
     - ./tools/build.sh
