@@ -170,9 +170,7 @@ class TTTRConvert(QtWidgets.QWidget):
         self._current_filetype = str(self.comboBox.currentText())
         self.file_list.filename_ending = self.ending
 
-    def open_target(
-            self
-    ):
+    def open_target(self):
         filename, _ = QtWidgets.QFileDialog.getSaveFileName(None, "TTTR file", None, "TTTR file (*.photon.h5; *.ht3; *.ptu; *.spc)")
         self.lineEdit.setText(filename)
         tttr_files = self.filenames
