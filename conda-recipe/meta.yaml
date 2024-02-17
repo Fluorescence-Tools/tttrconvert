@@ -41,7 +41,7 @@ test:
   imports:
     - tttrconvert
   commands:
-    - tttrconvert &        # [osx or linux]
+    - tttrconvert &        # [linux]
 
 about:
   home: {{ data.get('url') }}
