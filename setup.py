@@ -1,4 +1,3 @@
-#!/usr/bin/python
 try:
     import numpy as np
 except ImportError:

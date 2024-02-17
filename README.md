@@ -1,8 +1,11 @@
 # tttrconvert
 
-A ``tttrconvert`` is a tool to convert time-tagged time-resolved files into different formats. ``tttrconvert`` to read 
+A ``tttrconvert`` is a very basic tool to convert time-tagged time-resolved files into different formats. ``tttrconvert`` to read 
 and write TTTR files ``tttrconvert`` uses ``tttrlib``. The tool ``tttrconvert`` can be embedded 
 in other software and is part of ChiSurf.
+
+Currently, the tool has only very basic functions (it is probably not
+what you want).
 
 ![tttrconvert GUI][1]
 
@@ -15,7 +18,7 @@ To install ``tttrconvert`` from the source code clone the git repository and run
 setup script.
 
 ```commandline
-git clone https://gitlab.peulen.xyz/tpeulen/tttrconvert
+git clone https://github.com/fluorescence-tools/tttrconvert
 cd tttrconvert
 python setup.py install
 ```
@@ -26,23 +29,17 @@ tttrconvert
 ```
 
 ### Conda
-``tttrconvert`` depends on common python packages such as ``numpy``. Additionally, ``tttrconvert`` depends on 
-``tttrlib``. Thus, to install ``k2dist`` make sure that conda channels that provide packages for the necessary
-dependencies are listed in the ``.condarc`` file 
+`tttrconvert` can be installed using conda, best in a separate
+environment
 
-```yaml
-channels:
-  - tpeulen
-  - tpeulen/label/nightly
-  - conda-forge
-  - defaults
+```bash
+conda create tttrconvert
+mamba install tttrconvert -c tpeulen
 ```
 
-To avoid potential conflicts ``tttrconvert`` can be installed in a separate environment. 
-
-```commandline
-conda create -n test
-conda install tttrconvert
+To us the tool activate the tttrconvert environment and start the tool
+from the command line.
+```bash
 conda activate tttrconvert
 tttrconvert
 ```
@@ -51,11 +48,7 @@ tttrconvert
 
 ## Graphical user interface
 First, select the input file type. Next, add files to the file list by drag-and-drop. Finally,
-select the ouput file format and save/convert the files.
-
-## Note on meta-data
-The different TTTR file formats contain and support different meta-data. The meta-data may need to be 
-edited separately.
+select the output file format and save/convert the files.
 
 
 [1]: doc/gui.png "tttrconvert GUI"

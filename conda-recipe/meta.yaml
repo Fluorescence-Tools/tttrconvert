@@ -9,39 +9,45 @@ source:
 
 build:
   number: 0
-  string: py{{ python }}
   entry_points:
     {% for entry_point_type, entry_points in data.get("entry_points", dict()).items() -%}
     {% for entry_point in entry_points -%}
     - {{ entry_point }}
     {% endfor %}
     {% endfor %}
+
 requirements:
+  build:
+    - python
+    - numpy
+    - setuptools
+    - pyyaml
   host:
     - python
     - numpy
     - pyyaml
     - setuptools
-  build:
-    - python {{ python }}
-    - numpy
-    - setuptools
-    - pyyaml
   run:
     - python
     - numpy
-    - pyyaml
+    - pandas
+    - pyyaml >=5.0.0
     - qtpy
     - pyqt
     - pyqtgraph
     - tttrlib
-    - pathlib2 # [py < 3]
+
+test:
+  imports:
+    - tttrconvert
+  commands:
+    - tttrconvert &        # [linux]
 
 about:
   home: {{ data.get('url') }}
   license: {{ data.get('license') }}
   license_file: LICENSE
-  summary: Converter for TTTR files
+  summary: CLSMviewer application (for ChiSurf)
   description: |
     {{ data.get('description') }}
 
